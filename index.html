@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>성적 분석 및 예측 대시보드</title>
+    <meta name="description" content="고등학교 5등급제 기반 2회고사 목표 예측 및 전학기 누적 성적 분석 대시보드">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-chart-pie header-icon"></i>
+                <h1>성적분석 <span>대시보드</span></h1>
+            </div>
+            <p class="subtitle">학생별 맞춤형 성적 분석 및 등급 예측 시스템</p>
+        </header>
+
+        <!-- Dual Upload Section -->
+        <section class="upload-section">
+            <div class="upload-grid">
+                <!-- Slot 1: Mid-term Exam File -->
+                <div id="dropzoneMid" class="dropzone-box">
+                    <i class="fa-solid fa-file-excel icon-mid"></i>
+                    <h4>1회고사 파일 업로드</h4>
+                    <p class="desc">'전과목 - 복사본.xlsx' 등을 올리세요.</p>
+                    <input type="file" id="fileInputMid" accept=".xlsx, .xls" style="display: none;">
+                    <span id="fileStatusMid" class="file-status">파일 없음</span>
+                    <button type="button" class="btn btn-sm btn-outline" id="btnUploadMid">파일 선택</button>
+                    <div class="neis-path">
+                        <span class="path-title"><i class="fa-solid fa-circle-info"></i> NEIS 다운로드 경로</span>
+                        <p class="path-text">나이스 → 학급담임 → 성적조회/통계 → 학기말성적조회 → 성적일람표 전과목 <br><span>(산출기준: 1차 정기시험 · 받은점수기준 선택 후 엑셀 다운로드)</span></p>
+                    </div>
+                </div>
+                
+                <!-- Slot 2: Completed Semesters File -->
+                <div id="dropzoneFull" class="dropzone-box">
+                    <i class="fa-solid fa-graduation-cap icon-full"></i>
+                    <h4>전학기 성적 파일 업로드</h4>
+                    <p class="desc">'1학년 - 복사본.xlsx' 등을 올리세요.</p>
+                    <input type="file" id="fileInputFull" accept=".xlsx, .xls" style="display: none;">
+                    <span id="fileStatusFull" class="file-status">파일 없음</span>
+                    <button type="button" class="btn btn-sm btn-outline" id="btnUploadFull">파일 선택</button>
+                    <div class="neis-path">
+                        <span class="path-title"><i class="fa-solid fa-circle-info"></i> NEIS 다운로드 경로</span>
+                        <p class="path-text">나이스 → 학급담임 → 학교생활기록부 → 학생부 항목별 조회 → 교과학습발달상황(전체학생)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls Section (Visible after at least one upload) -->
+        <section class="controls-section hidden" id="controlsSection">
+            <div class="control-group">
+                <label for="studentSelect" style="display: flex; justify-content: space-between; width: 100%;">
+                    <span><i class="fa-solid fa-user"></i> 대상 학생 선택</span>
+                    <span id="studentCountBadge" class="count-badge hidden">로딩 완료: 0명</span>
+                </label>
+                <select id="studentSelect" class="form-select">
+                    <option value="" disabled selected>학생을 선택하세요</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Tab Navigation (Visible after student selected) -->
+        <nav class="tab-navigation hidden" id="tabNavigation">
+            <button class="tab-btn active" id="tabBtnMid" data-tab="mid">
+                <i class="fa-solid fa-bullseye"></i> 1회고사 분석 (2회고사 준비)
+            </button>
+            <button class="tab-btn" id="tabBtnFull" data-tab="full">
+                <i class="fa-solid fa-chart-line"></i> 전학기 성적 분석 (다음 학기 준비)
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="dashboard-content hidden" id="dashboardContent">
+            <!-- Student Header Profile Info -->
+            <div class="student-profile-card">
+                <div class="avatar">
+                    <span id="studentAvatarText">림</span>
+                </div>
+                <div class="profile-info">
+                    <h2 id="studentName">홍길동 <span class="student-number" id="studentNum">2학년 2반 8번</span></h2>
+                </div>
+            </div>
+
+            <!-- Tab 1: Mid-term / Final Predict Dashboard -->
+            <div class="tab-pane active" id="tabPaneMid">
+                <!-- Summary of Estimated Average Grade -->
+                <div class="summary-card-mid" id="summaryCardMid">
+                    <div class="summary-card-header">
+                        <span><i class="fa-solid fa-calculator"></i> 1회 고사 예상 평균 등급</span>
+                        <span id="avgGradeMid" class="avg-grade-badge">- 등급</span>
+                    </div>
+                    <p class="summary-card-notice">
+                        <i class="fa-solid fa-triangle-exclamation"></i> 본 등급은 1회고사 지필평가 점수와 석차만을 기준으로 산출한 단순 예상 등급이며, 수행평가 및 2회고사가 미반영된 결과입니다.
+                    </p>
+                </div>
+
+                <div class="panel-header">
+                    <h4><i class="fa-solid fa-list-check"></i> 과목별 2회고사 대비 등급 상승 목표</h4>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="btn btn-sm btn-outline" id="btnCopyAnalysisMid">
+                            <i class="fa-solid fa-copy"></i> 분석결과 복사
+                        </button>
+                        <span class="info-pill">5등급제 반올림 적용</span>
+                    </div>
+                </div>
+                
+                <!-- Subject Cards Grid -->
+                <div class="subject-grid" id="subjectGrid">
+                    <!-- Cards dynamically injected -->
+                </div>
+                
+                <!-- AI Prompt Section -->
+                <div class="ai-prompt-box">
+                    <div class="prompt-header">
+                        <h5><i class="fa-solid fa-robot"></i> 제미나이(AI) 분석 프롬프트</h5>
+                        <button class="btn btn-sm btn-primary" id="btnCopyPromptMid">
+                            <i class="fa-solid fa-copy"></i> 복사하기
+                        </button>
+                    </div>
+                    <p class="prompt-desc">아래 프롬프트를 복사하여 제미나이에 넣으면 2회고사 대비 맞춤형 구체적 학습 전략을 작성해 줍니다.</p>
+                    <textarea class="prompt-textarea" id="promptTextMid" readonly></textarea>
+                </div>
+            </div>
+
+            <!-- Tab 2: All Completed Semesters Dashboard -->
+            <div class="tab-pane" id="tabPaneFull">
+                <!-- Cumulative & Yearly Averages Summary Card -->
+                <div class="averages-summary-card" id="averagesSummaryCard">
+                    <!-- Left: Cumulative GPA -->
+                    <div class="avg-box cumulative-box">
+                        <span class="box-title">모든 학기 평균 등급</span>
+                        <span id="cumulativeAvgEl" class="box-value">- 등급</span>
+                    </div>
+                    <!-- Right: Yearly & Semester Averages list -->
+                    <div class="avg-box breakdown-box">
+                        <span class="box-title"><i class="fa-solid fa-chart-bar"></i> 학년 및 학기별 평균 등급</span>
+                        <div id="averagesBreakdownList" class="breakdown-list">
+                            <!-- Dynamic items injected -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-header">
+                    <h4><i class="fa-solid fa-table"></i> 학기별 성적 현황</h4>
+                    <button type="button" class="btn btn-sm btn-outline" id="btnCopyTableFull">
+                        <i class="fa-solid fa-copy"></i> 표 복사 (Excel용)
+                    </button>
+                </div>
+                
+                <!-- Completed Semesters Table -->
+                <div class="table-container">
+                    <table class="semesters-table" id="semestersTable">
+                        <thead>
+                            <tr id="semestersTableHeader">
+                                <th>과목</th>
+                                <!-- Semester headers dynamically injected -->
+                            </tr>
+                        </thead>
+                        <tbody id="semestersTableBody">
+                            <!-- Rows dynamically injected -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel-header" style="margin-top: 30px;">
+                    <h4><i class="fa-solid fa-chart-simple"></i> 계열별 등급 변화 추이</h4>
+                    <span class="info-pill">* Y축 위 = 1등급(높은 등급)</span>
+                </div>
+
+                <!-- Category filter buttons (Pills) -->
+                <div class="category-filters" id="categoryFilters">
+                    <!-- Pills dynamically injected -->
+                </div>
+
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+
+                <!-- AI Prompt Section -->
+                <div class="ai-prompt-box" style="margin-top: 30px;">
+                    <div class="prompt-header">
+                        <h5><i class="fa-solid fa-robot"></i> 제미나이(AI) 진로/학습 분석 프롬프트</h5>
+                        <button class="btn btn-sm btn-primary" id="btnCopyPromptFull">
+                            <i class="fa-solid fa-copy"></i> 복사하기
+                        </button>
+                    </div>
+                    <p class="prompt-desc">아래 프롬프트를 복사하여 제미나이에 넣으면 계열 강점 파악 및 다음 학기 과목 로드맵을 설계해 줍니다.</p>
+                    <textarea class="prompt-textarea" id="promptTextFull" readonly></textarea>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 성적 분석 및 등급 예측 시스템. All rights reserved.</p>
+            <p>&copy; 제작자: Math Play Fire_Subi | 최근 업데이트: 2026-05-24</p>
+        </footer>
+    </div>
+
+    <!-- SheetJS (XLSX.js) for parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js for Trend Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
