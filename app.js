@@ -2,6 +2,9 @@
 let studentsDataMid = {};  // Mid-term Exam Data: StudentNum -> Data
 let studentsDataFull = {}; // Completed Semesters Data: StudentNum -> Data
 let selectedStudentId = null;
+let uploadedFileNameMid = null;
+let uploadedFileNameFull = null;
+let isUploadSectionExpanded = true;
 let activeTab = 'mid'; // 'mid' or 'full'
 let trendChart = null; // Chart.js instance
 
@@ -58,6 +61,12 @@ const promptTextMid = document.getElementById('promptTextMid');
 const btnCopyPromptMid = document.getElementById('btnCopyPromptMid');
 const btnCopyAnalysisMid = document.getElementById('btnCopyAnalysisMid');
 const btnCopyAllAnalysisMid = document.getElementById('btnCopyAllAnalysisMid');
+
+const uploadStatusBar = document.getElementById('uploadStatusBar');
+const statusMidInfo = document.getElementById('statusMidInfo');
+const statusFullInfo = document.getElementById('statusFullInfo');
+const btnToggleUpload = document.getElementById('btnToggleUpload');
+const uploadSection = document.getElementById('uploadSection');
 
 // Tab 2 Elements
 const semestersTableHeader = document.getElementById('semestersTableHeader');
@@ -117,6 +126,9 @@ if (btnCopyAllAnalysisMid) {
 if (btnCopyTableFull) {
     btnCopyTableFull.addEventListener('click', copyTableToClipboard);
 }
+if (btnToggleUpload) {
+    btnToggleUpload.addEventListener('click', toggleUploadSection);
+}
 
 // File Handling
 function handleFile(file, type) {
@@ -138,16 +150,22 @@ function handleFile(file, type) {
                 parseFullFile(sheetData);
                 fileStatusFull.textContent = file.name;
                 fileStatusFull.classList.add('loaded');
+                uploadedFileNameFull = file.name;
             } else {
                 parseMidFile(sheetData);
                 fileStatusMid.textContent = file.name;
                 fileStatusMid.classList.add('loaded');
+                uploadedFileNameMid = file.name;
             }
 
             populateStudentSelector();
             
             // Show student selector controls
             controlsSection.classList.remove('hidden');
+
+            // Update upload status summary and collapse the section
+            updateUploadStatus();
+            collapseUploadSection();
         } catch (error) {
             console.error(error);
             alert('엑셀 파일을 읽는 도중 오류가 발생했습니다. 올바른 형식인지 확인하세요.');
@@ -1327,4 +1345,54 @@ function copyTableToClipboard() {
             btn.style.borderColor = '';
         }, 1500);
     });
+}
+
+// Update upload status bar text
+function updateUploadStatus() {
+    if (!uploadStatusBar) return;
+
+    if (uploadedFileNameMid || uploadedFileNameFull) {
+        uploadStatusBar.classList.remove('hidden');
+    }
+
+    if (statusMidInfo) {
+        if (uploadedFileNameMid) {
+            statusMidInfo.innerHTML = `<i class="fa-solid fa-file-excel icon-mid"></i> 1회고사: <span style="font-weight: 700; color: #107c41;">${uploadedFileNameMid}</span>`;
+        } else {
+            statusMidInfo.innerHTML = `<i class="fa-solid fa-file-excel icon-mid" style="opacity: 0.5;"></i> 1회고사: <span style="color: var(--text-sub);">미등록</span>`;
+        }
+    }
+
+    if (statusFullInfo) {
+        if (uploadedFileNameFull) {
+            statusFullInfo.innerHTML = `<i class="fa-solid fa-graduation-cap icon-full"></i> 전학기 성적: <span style="font-weight: 700; color: #4b4dd6;">${uploadedFileNameFull}</span>`;
+        } else {
+            statusFullInfo.innerHTML = `<i class="fa-solid fa-graduation-cap icon-full" style="opacity: 0.5;"></i> 전학기 성적: <span style="color: var(--text-sub);">미등록</span>`;
+        }
+    }
+}
+
+// Toggle Upload Section Collapse/Expand
+function toggleUploadSection() {
+    isUploadSectionExpanded = !isUploadSectionExpanded;
+    applyUploadSectionState();
+}
+
+// Collapse Upload Section
+function collapseUploadSection() {
+    isUploadSectionExpanded = false;
+    applyUploadSectionState();
+}
+
+// Apply Expand/Collapse State to UI
+function applyUploadSectionState() {
+    if (!uploadSection || !btnToggleUpload) return;
+
+    if (isUploadSectionExpanded) {
+        uploadSection.classList.remove('collapsed');
+        btnToggleUpload.innerHTML = `<i class="fa-solid fa-chevron-up"></i> 업로드 영역 접기`;
+    } else {
+        uploadSection.classList.add('collapsed');
+        btnToggleUpload.innerHTML = `<i class="fa-solid fa-chevron-down"></i> 파일 교체 (영역 펼치기)`;
+    }
 }
