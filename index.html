@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,14 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Header -->
@@ -24,8 +28,24 @@
             <p class="subtitle">학생별 맞춤형 성적 분석 및 등급 예측 시스템</p>
         </header>
 
+        <!-- 파일 탑재 상태 요약 바 (업로드 완료 시 토글 제어) -->
+        <div id="uploadStatusBar" class="upload-status-bar hidden">
+            <div class="status-info">
+                <span id="statusMidInfo" class="status-item">
+                    <i class="fa-solid fa-file-excel icon-mid"></i> 1회고사: 미등록
+                </span>
+                <span class="status-separator"></span>
+                <span id="statusFullInfo" class="status-item">
+                    <i class="fa-solid fa-graduation-cap icon-full"></i> 전학기 성적: 미등록
+                </span>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline" id="btnToggleUpload">
+                <i class="fa-solid fa-chevron-up"></i> 업로드 영역 접기
+            </button>
+        </div>
+
         <!-- Dual Upload Section -->
-        <section class="upload-section">
+        <section class="upload-section" id="uploadSection">
             <div class="upload-grid">
                 <!-- Slot 1: Mid-term Exam File -->
                 <div id="dropzoneMid" class="dropzone-box">
@@ -37,10 +57,11 @@
                     <button type="button" class="btn btn-sm btn-outline" id="btnUploadMid">파일 선택</button>
                     <div class="neis-path">
                         <span class="path-title"><i class="fa-solid fa-circle-info"></i> NEIS 다운로드 경로</span>
-                        <p class="path-text">나이스 → 학급담임 → 성적조회/통계 → 학기말성적조회 → 성적일람표 전과목 <br><span>(산출기준: 1차 정기시험 · 받은점수기준 선택 후 엑셀 다운로드)</span></p>
+                        <p class="path-text">나이스 → 학급담임 → 성적조회/통계 → 학기말성적조회 → 성적일람표 전과목 <br><span>(산출기준: 1차 정기시험 ·
+                                받은점수기준 선택 후 엑셀 다운로드)</span></p>
                     </div>
                 </div>
-                
+
                 <!-- Slot 2: Completed Semesters File -->
                 <div id="dropzoneFull" class="dropzone-box">
                     <i class="fa-solid fa-graduation-cap icon-full"></i>
@@ -109,7 +130,7 @@
                                 <span class="info-pill">5등급제 반올림 적용</span>
                             </div>
                         </div>
-                        
+
                         <!-- Subject Cards Grid -->
                         <div class="subject-grid" id="subjectGrid">
                             <!-- Cards dynamically injected -->
@@ -125,7 +146,8 @@
                                 <span id="avgGradeMid" class="avg-grade-badge">- 등급</span>
                             </div>
                             <p class="summary-card-notice">
-                                <i class="fa-solid fa-triangle-exclamation"></i> 본 등급은 1회고사 지필평가 점수와 석차만을 기준으로 산출한 단순 예상 등급이며, 수행평가 및 2회고사가 미반영된 결과입니다.
+                                <i class="fa-solid fa-triangle-exclamation"></i> 본 등급은 1회고사 지필평가 점수와 석차만을 기준으로 산출한 단순 예상
+                                등급이며, 수행평가 및 2회고사가 미반영된 결과입니다.
                             </p>
                         </div>
 
@@ -155,7 +177,7 @@
                                 <i class="fa-solid fa-copy"></i> 표 복사 (Excel용)
                             </button>
                         </div>
-                        
+
                         <!-- Completed Semesters Table -->
                         <div class="table-container">
                             <table class="semesters-table" id="semestersTable">
@@ -224,7 +246,7 @@
         <!-- Footer -->
         <footer class="app-footer">
             <p>&copy; 2026 성적 분석 및 등급 예측 시스템. All rights reserved.</p>
-            <p>&copy; 제작자: Math Play Fire_Subi | 최근 업데이트: 2026-05-24</p>
+            <p>&copy; 제작자: Math Play Fire_Subi | 최근 업데이트: 2026-05-25</p>
         </footer>
     </div>
 
@@ -234,4 +256,5 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>
