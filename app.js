@@ -57,6 +57,7 @@ const subjectGrid = document.getElementById('subjectGrid');
 const promptTextMid = document.getElementById('promptTextMid');
 const btnCopyPromptMid = document.getElementById('btnCopyPromptMid');
 const btnCopyAnalysisMid = document.getElementById('btnCopyAnalysisMid');
+const btnCopyAllAnalysisMid = document.getElementById('btnCopyAllAnalysisMid');
 
 // Tab 2 Elements
 const semestersTableHeader = document.getElementById('semestersTableHeader');
@@ -109,6 +110,9 @@ btnCopyPromptMid.addEventListener('click', () => copyToClipboard(promptTextMid, 
 btnCopyPromptFull.addEventListener('click', () => copyToClipboard(promptTextFull, btnCopyPromptFull));
 if (btnCopyAnalysisMid) {
     btnCopyAnalysisMid.addEventListener('click', copyAnalysisMidToClipboard);
+}
+if (btnCopyAllAnalysisMid) {
+    btnCopyAllAnalysisMid.addEventListener('click', copyAllAnalysisMidToClipboard);
 }
 if (btnCopyTableFull) {
     btnCopyTableFull.addEventListener('click', copyTableToClipboard);
@@ -1142,6 +1146,86 @@ function copyAnalysisMidToClipboard() {
         if (!btn) return;
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fa-solid fa-check"></i> 복사 완료';
+        btn.style.backgroundColor = '#0ca678';
+        btn.style.color = 'white';
+        btn.style.borderColor = '#0ca678';
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.backgroundColor = '';
+            btn.style.color = '';
+            btn.style.borderColor = '';
+        }, 1500);
+    });
+}
+
+// Copy Tab 1 All Students Analysis Results to Clipboard
+function copyAllAnalysisMidToClipboard() {
+    const studentIds = Object.keys(studentsDataMid).sort((a, b) => parseInt(a) - parseInt(b));
+    if (studentIds.length === 0) {
+        alert('업로드된 1회고사 학생 데이터가 없습니다.');
+        return;
+    }
+    
+    const allLines = [];
+    studentIds.forEach(id => {
+        const student = studentsDataMid[id];
+        const subjectList = [];
+        Object.keys(student.subjects).forEach(subName => {
+            const subData = student.subjects[subName];
+            const unitMatch = subName.match(/\((\d+)\)/);
+            const units = unitMatch ? parseInt(unitMatch[1]) : 3;
+            const { rank, ties } = parseRank(subData.rankRaw);
+            if (rank === null || subData.totalStudents === null) return;
+
+            const currentGrade = calculateGrade(rank, ties, subData.totalStudents);
+            const targetGrade = Math.max(1, currentGrade - 1);
+            const targetLimit = getTargetLimit(targetGrade);
+            let targetRank = null;
+            let overtake = 0;
+            if (targetLimit !== null && currentGrade > 1) {
+                targetRank = Math.round(subData.totalStudents * targetLimit);
+                overtake = Math.max(0, rank - targetRank);
+            }
+
+            subjectList.push({
+                name: subName.replace(/\(\d+\)/, "").trim(),
+                units: units,
+                score: subData.score,
+                rankRaw: subData.rankRaw,
+                totalStudents: subData.totalStudents,
+                currentGrade: currentGrade,
+                targetGrade: targetGrade,
+                targetRank: targetRank,
+                overtake: overtake
+            });
+        });
+
+        subjectList.sort((a, b) => a.overtake - b.overtake);
+
+        allLines.push(`[1회고사 성적 분석 결과 - ${student.name} (${id}번)]`);
+        allLines.push(`평균 등급: ${calculateAverageGPA(student)}등급`);
+        allLines.push(`과목별 2회고사 목표 및 추월 필요 인원 (우선순위 순):`);
+
+        subjectList.forEach((sub, idx) => {
+            if (sub.currentGrade === 1) {
+                allLines.push(`${idx + 1}. ${sub.name}(${sub.units}단위): 현재 1등급 (원점수 ${sub.score}점, ${sub.rankRaw}위/${sub.totalStudents}명) -> 1등급 유지`);
+            } else {
+                allLines.push(`${idx + 1}. ${sub.name}(${sub.units}단위): 현재 ${sub.currentGrade}등급 (원점수 ${sub.score}점, ${sub.rankRaw}위/${sub.totalStudents}명) -> 목표 ${sub.targetGrade}등급 (목표 ${sub.targetRank}위 이내, 앞에 ${sub.overtake}명 추월 필요)`);
+            }
+        });
+        allLines.push(`\n--------------------------------------------------\n`);
+    });
+
+    if (allLines.length > 0) {
+        allLines.pop(); 
+    }
+
+    const clipboardText = allLines.join('\n');
+    navigator.clipboard.writeText(clipboardText).then(() => {
+        const btn = document.getElementById('btnCopyAllAnalysisMid');
+        if (!btn) return;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> 전체 복사 완료';
         btn.style.backgroundColor = '#0ca678';
         btn.style.color = 'white';
         btn.style.borderColor = '#0ca678';

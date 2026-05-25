@@ -94,110 +94,129 @@
 
             <!-- Tab 1: Mid-term / Final Predict Dashboard -->
             <div class="tab-pane active" id="tabPaneMid">
-                <!-- Summary of Estimated Average Grade -->
-                <div class="summary-card-mid" id="summaryCardMid">
-                    <div class="summary-card-header">
-                        <span><i class="fa-solid fa-calculator"></i> 1회 고사 예상 평균 등급</span>
-                        <span id="avgGradeMid" class="avg-grade-badge">- 등급</span>
+                <div class="pane-layout">
+                    <!-- Left Column: Subject Grid -->
+                    <div class="pane-main">
+                        <div class="panel-header">
+                            <h4><i class="fa-solid fa-list-check"></i> 과목별 2회고사 대비 등급 상승 목표</h4>
+                            <div class="panel-header-buttons">
+                                <button type="button" class="btn btn-sm btn-outline" id="btnCopyAnalysisMid">
+                                    <i class="fa-solid fa-copy"></i> 분석결과 복사
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline" id="btnCopyAllAnalysisMid">
+                                    <i class="fa-solid fa-copy"></i> 전체 분석결과 복사
+                                </button>
+                                <span class="info-pill">5등급제 반올림 적용</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Subject Cards Grid -->
+                        <div class="subject-grid" id="subjectGrid">
+                            <!-- Cards dynamically injected -->
+                        </div>
                     </div>
-                    <p class="summary-card-notice">
-                        <i class="fa-solid fa-triangle-exclamation"></i> 본 등급은 1회고사 지필평가 점수와 석차만을 기준으로 산출한 단순 예상 등급이며, 수행평가 및 2회고사가 미반영된 결과입니다.
-                    </p>
-                </div>
 
-                <div class="panel-header">
-                    <h4><i class="fa-solid fa-list-check"></i> 과목별 2회고사 대비 등급 상승 목표</h4>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <button type="button" class="btn btn-sm btn-outline" id="btnCopyAnalysisMid">
-                            <i class="fa-solid fa-copy"></i> 분석결과 복사
-                        </button>
-                        <span class="info-pill">5등급제 반올림 적용</span>
+                    <!-- Right Column: Summary & AI Prompt -->
+                    <div class="pane-side">
+                        <!-- Summary of Estimated Average Grade -->
+                        <div class="summary-card-mid" id="summaryCardMid">
+                            <div class="summary-card-header">
+                                <span><i class="fa-solid fa-calculator"></i> 1회 고사 예상 평균 등급</span>
+                                <span id="avgGradeMid" class="avg-grade-badge">- 등급</span>
+                            </div>
+                            <p class="summary-card-notice">
+                                <i class="fa-solid fa-triangle-exclamation"></i> 본 등급은 1회고사 지필평가 점수와 석차만을 기준으로 산출한 단순 예상 등급이며, 수행평가 및 2회고사가 미반영된 결과입니다.
+                            </p>
+                        </div>
+
+                        <!-- AI Prompt Section -->
+                        <div class="ai-prompt-box">
+                            <div class="prompt-header">
+                                <h5><i class="fa-solid fa-robot"></i> 제미나이(AI) 분석 프롬프트</h5>
+                                <button class="btn btn-sm btn-primary" id="btnCopyPromptMid">
+                                    <i class="fa-solid fa-copy"></i> 복사하기
+                                </button>
+                            </div>
+                            <p class="prompt-desc">아래 프롬프트를 복사하여 제미나이에 넣으면 2회고사 대비 맞춤형 구체적 학습 전략을 작성해 줍니다.</p>
+                            <textarea class="prompt-textarea" id="promptTextMid" readonly></textarea>
+                        </div>
                     </div>
-                </div>
-                
-                <!-- Subject Cards Grid -->
-                <div class="subject-grid" id="subjectGrid">
-                    <!-- Cards dynamically injected -->
-                </div>
-                
-                <!-- AI Prompt Section -->
-                <div class="ai-prompt-box">
-                    <div class="prompt-header">
-                        <h5><i class="fa-solid fa-robot"></i> 제미나이(AI) 분석 프롬프트</h5>
-                        <button class="btn btn-sm btn-primary" id="btnCopyPromptMid">
-                            <i class="fa-solid fa-copy"></i> 복사하기
-                        </button>
-                    </div>
-                    <p class="prompt-desc">아래 프롬프트를 복사하여 제미나이에 넣으면 2회고사 대비 맞춤형 구체적 학습 전략을 작성해 줍니다.</p>
-                    <textarea class="prompt-textarea" id="promptTextMid" readonly></textarea>
                 </div>
             </div>
 
             <!-- Tab 2: All Completed Semesters Dashboard -->
             <div class="tab-pane" id="tabPaneFull">
-                <!-- Cumulative & Yearly Averages Summary Card -->
-                <div class="averages-summary-card" id="averagesSummaryCard">
-                    <!-- Left: Cumulative GPA -->
-                    <div class="avg-box cumulative-box">
-                        <span class="box-title">모든 학기 평균 등급</span>
-                        <span id="cumulativeAvgEl" class="box-value">- 등급</span>
-                    </div>
-                    <!-- Right: Yearly & Semester Averages list -->
-                    <div class="avg-box breakdown-box">
-                        <span class="box-title"><i class="fa-solid fa-chart-bar"></i> 학년 및 학기별 평균 등급</span>
-                        <div id="averagesBreakdownList" class="breakdown-list">
-                            <!-- Dynamic items injected -->
+                <div class="pane-layout">
+                    <!-- Left Column: Table & Chart -->
+                    <div class="pane-main">
+                        <div class="panel-header">
+                            <h4><i class="fa-solid fa-table"></i> 학기별 성적 현황</h4>
+                            <button type="button" class="btn btn-sm btn-outline" id="btnCopyTableFull">
+                                <i class="fa-solid fa-copy"></i> 표 복사 (Excel용)
+                            </button>
+                        </div>
+                        
+                        <!-- Completed Semesters Table -->
+                        <div class="table-container">
+                            <table class="semesters-table" id="semestersTable">
+                                <thead>
+                                    <tr id="semestersTableHeader">
+                                        <th>과목</th>
+                                        <!-- Semester headers dynamically injected -->
+                                    </tr>
+                                </thead>
+                                <tbody id="semestersTableBody">
+                                    <!-- Rows dynamically injected -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="panel-header" style="margin-top: 30px;">
+                            <h4><i class="fa-solid fa-chart-simple"></i> 계열별 등급 변화 추이</h4>
+                            <span class="info-pill">* Y축 위 = 1등급(높은 등급)</span>
+                        </div>
+
+                        <!-- Category filter buttons (Pills) -->
+                        <div class="category-filters" id="categoryFilters">
+                            <!-- Pills dynamically injected -->
+                        </div>
+
+                        <!-- Chart Container -->
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
                         </div>
                     </div>
-                </div>
 
-                <div class="panel-header">
-                    <h4><i class="fa-solid fa-table"></i> 학기별 성적 현황</h4>
-                    <button type="button" class="btn btn-sm btn-outline" id="btnCopyTableFull">
-                        <i class="fa-solid fa-copy"></i> 표 복사 (Excel용)
-                    </button>
-                </div>
-                
-                <!-- Completed Semesters Table -->
-                <div class="table-container">
-                    <table class="semesters-table" id="semestersTable">
-                        <thead>
-                            <tr id="semestersTableHeader">
-                                <th>과목</th>
-                                <!-- Semester headers dynamically injected -->
-                            </tr>
-                        </thead>
-                        <tbody id="semestersTableBody">
-                            <!-- Rows dynamically injected -->
-                        </tbody>
-                    </table>
-                </div>
+                    <!-- Right Column: Summary & AI Prompt -->
+                    <div class="pane-side">
+                        <!-- Cumulative & Yearly Averages Summary Card -->
+                        <div class="averages-summary-card" id="averagesSummaryCard">
+                            <!-- Left: Cumulative GPA -->
+                            <div class="avg-box cumulative-box">
+                                <span class="box-title">모든 학기 평균 등급</span>
+                                <span id="cumulativeAvgEl" class="box-value">- 등급</span>
+                            </div>
+                            <!-- Right: Yearly & Semester Averages list -->
+                            <div class="avg-box breakdown-box">
+                                <span class="box-title"><i class="fa-solid fa-chart-bar"></i> 학년 및 학기별 평균 등급</span>
+                                <div id="averagesBreakdownList" class="breakdown-list">
+                                    <!-- Dynamic items injected -->
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="panel-header" style="margin-top: 30px;">
-                    <h4><i class="fa-solid fa-chart-simple"></i> 계열별 등급 변화 추이</h4>
-                    <span class="info-pill">* Y축 위 = 1등급(높은 등급)</span>
-                </div>
-
-                <!-- Category filter buttons (Pills) -->
-                <div class="category-filters" id="categoryFilters">
-                    <!-- Pills dynamically injected -->
-                </div>
-
-                <!-- Chart Container -->
-                <div class="chart-container">
-                    <canvas id="trendChart"></canvas>
-                </div>
-
-                <!-- AI Prompt Section -->
-                <div class="ai-prompt-box" style="margin-top: 30px;">
-                    <div class="prompt-header">
-                        <h5><i class="fa-solid fa-robot"></i> 제미나이(AI) 진로/학습 분석 프롬프트</h5>
-                        <button class="btn btn-sm btn-primary" id="btnCopyPromptFull">
-                            <i class="fa-solid fa-copy"></i> 복사하기
-                        </button>
+                        <!-- AI Prompt Section -->
+                        <div class="ai-prompt-box">
+                            <div class="prompt-header">
+                                <h5><i class="fa-solid fa-robot"></i> 제미나이(AI) 진로/학습 분석 프롬프트</h5>
+                                <button class="btn btn-sm btn-primary" id="btnCopyPromptFull">
+                                    <i class="fa-solid fa-copy"></i> 복사하기
+                                </button>
+                            </div>
+                            <p class="prompt-desc">아래 프롬프트를 복사하여 제미나이에 넣으면 계열 강점 파악 및 다음 학기 과목 로드맵을 설계해 줍니다.</p>
+                            <textarea class="prompt-textarea" id="promptTextFull" readonly></textarea>
+                        </div>
                     </div>
-                    <p class="prompt-desc">아래 프롬프트를 복사하여 제미나이에 넣으면 계열 강점 파악 및 다음 학기 과목 로드맵을 설계해 줍니다.</p>
-                    <textarea class="prompt-textarea" id="promptTextFull" readonly></textarea>
                 </div>
             </div>
         </main>
